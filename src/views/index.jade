@@ -1,0 +1,239 @@
+//- index.jade
+extends ./layout.jade
+
+block content
+  div.container-fluid(ng-controller='StatsCtrl')
+    div.row(ng-cloak)
+      div.col-xs-2.stat-holder
+        div.big-info.bestblock.text-info
+          div.pull-left.icon-full-width
+            img(src="/icon_latest_main_block.png" style="width: 70px;")
+          div.big-details-holder
+            span.small-title Latest Main block
+            span.big-details {{'#'}}{{ bestBlock | number}}
+          div.clearfix
+      div.col-xs-2.stat-holder
+        div.big-info.bestblock.text-info
+          div.pull-left.icon-full-width
+            img(src="/icon_latest_citizen_block.png" style="width: 70px;")
+          div.big-details-holder
+            span.small-title Latest Citizen block
+            span.big-details {{'#'}}{{ bestCitizenBlock | number}}
+          div.clearfix
+      div.col-xs-2.stat-holder
+        div.big-info.bestblock.text-info
+          div.pull-left.icon-full-width
+            img(src="/icon_latest_warrant_block.png" style="width: 70px;")
+          div.big-details-holder
+            span.small-title Latest Warrant block
+            span.big-details {{'#'}}{{ bestWarrantBlock | number}}
+          div.clearfix
+      div.col-xs-2.stat-holder
+        div.big-info.blocktime(class="{{ lastBlock | timeClass : true }}")
+          div.pull-left.icon-full-width
+            i.material-icons hourglass_empty
+          div.big-details-holder
+            span.small-title last block time
+            span.big-details {{ lastBlock | blockTimeFilter }}
+            //- span.big-details(time-ago="lastBlock")
+          div.clearfix
+      div.col-xs-2.stat-holder
+        div.big-info.avgblocktime(class="{{ avgBlockTime | avgTimeClass }}")
+          div.pull-left.icon-full-width
+            i.material-icons alarm
+          div.big-details-holder
+            span.small-title avg block time
+            span.big-details {{ avgBlockTime | avgTimeFilter }}
+          div.clearfix
+      div.col-xs-2
+
+    div.row(ng-cloak)
+      div.col-xs-12.stats-boxes(style="padding-top: 0px;")
+        div.row.second-row
+          div.col-xs-2.stat-holder.box
+            div.active-nodes(class="{{ nodesActive | nodesActiveClass : nodesTotal }}")
+              i.material-icons dns
+              span.small-title active nodes
+              span.small-value {{nodesActive}}/{{nodesTotal}}
+          div.col-xs-2.stat-holder.box
+            div.gasprice.text-info
+              i.material-icons autorenew
+              span.small-title gas price
+              span.small-value {{ bestStats.gasPrice.toString() | gasPriceFilter }}
+          div.col-xs-2.stat-holder.box
+            div.gasprice.text-info
+              i.material-icons autorenew
+              span.small-title gas limit
+              span.small-value {{ bestStats.block.gasLimit }} gas
+          div.col-xs-2.stat-holder.box
+            div.page-latency(class="{{ {active: true, latency: latency} | latencyClass }}")
+              i.material-icons timelapse
+              span.small-title page latency
+              span.small-value {{latency}} ms
+          div.col-xs-2.stat-holder.box
+            div.uptime(class="{{ upTimeTotal | upTimeClass : true }}")
+              i.material-icons timer
+              span.small-title uptime
+              span.small-value {{ upTimeTotal | upTimeFilter }}
+          div.col-xs-2
+        div.row
+          div.col-xs-6
+            div.row
+              div.col-xs-4.stat-holder
+                div.big-info.chart(class="{{ avgBlockTime | avgTimeClass }}")
+                  //- i.icon-time
+                  span.small-title block time
+                  //- span.small-value {{ avgBlockTime | avgTimeFilter }}
+                  sparkchart.big-details.spark-blocktimes(data="{{lastBlocksTime.join(',')}}", tooltipsuffix="s")
+
+              div.col-xs-4.stat-holder.xpull-right
+                div.big-info.chart.xdouble-chart
+                  //- i.icon-gas
+                  span.small-title last block primary
+                  span.block-primary(class="{{ {primaryNode: primaryNode } | primaryNodeClass }}")
+                    i.icon-uncle
+                    span.text-info {{ primary }}
+                  span.block-primary(class="{{ {primaryNode: primaryNode } | primaryNodeClass }}")
+                    i.icon-laptop
+                    span.text-info {{ primaryNode | primaryNodeFilter }}
+
+
+              //div.col-xs-3.stat-holder.xpull-right
+              //  div.big-info.chart.xdouble-chart
+              //    //- i.icon-gas
+              //    span.small-title last block Verifiers
+              //    span.small-value.text-info TOTAL {{ verifiersCount }}
+              //    span.block-verifiers(ng-bind-html="verifiers | verifierTextFilter")
+              //
+              //div.col-xs-3.stat-holder.xpull-rightTotal
+              //  div.big-info.chart.xdouble-chart
+              //    span.small-title last blocks dminers
+              //    div.blocks-holder(ng-repeat='miner in miners track by miner.miner', data-toggle="tooltip", data-placement="right", data-original-title="{{miner.blocks}}")
+              //      div.block-count(class="{{miner.blocks | minerBlocksClass : 'text-'}}") {{miner.blocks}}
+              //      //- div.small-title-miner {{miner.miner | minerNameFilter : miner.name}}
+              //      div.small-title-miner {{miner.miner}}
+              //      minerblock(blocks="{{miner.blocks}}")
+              //      div.clearfix
+
+              div.col-xs-4.stat-holder
+                div.big-info.chart.text-info
+                  //- i.icon-uncle
+                  span.small-title transactions
+                  sparkchart.big-details.spark-transactions(data="{{transactionDensity.join(',')}}")
+
+            div.row
+              div.col-xs-4.stat-holder
+                div.big-info.chart.text-info
+                  //- i.icon-gasprice
+                  span.small-title gas spending
+                  sparkchart.big-details.spark-gasspending(data="{{gasSpending.join(',')}}")
+
+              div.col-xs-4.stat-holder
+                div.big-info.chart.text-info
+                  //- i.icon-gasprice
+                  span.small-title gas limit
+                  sparkchart.big-details.spark-gasspending(data="{{gasLimit.join(',')}}")
+
+              //TPS DIV
+              div.col-xs-4.stat-holder.xpull-right
+                div.big-info.chart
+                  //- i.icon-gas
+                  span.small-title TPS STATUS
+                  span.tps
+                    i.text-info.icon-clock
+                    span TRANSACTIONS PER SECOND
+                    span.block-primary.sub-info.text-info {{ tps }} tps
+                  span.tps
+                    i.text-info.icon-warning-o
+                    span TRANSACTION COUNT
+                    span.block-primary.sub-info.text-info {{ txs }} txs
+                  span.tps
+                    i.text-info.icon-time
+                    span BLOCK GENERATE TIME
+                    span.block-primary.sub-info.text-info {{ bgt }} ms
+              //div.col-xs-4.stat-holder
+              //  div.big-info.chart.text-info
+              //    //- i.icon-gasprice
+              //    span.small-title Transactions Per Second
+              //    span.small-value {{ tps }} tps
+
+          div.col-xs-4.stat-holder.map-holder(style="background-color:#000023;")
+            //- div.col-xs-12
+            img(src="/main_img_00.png" width="625" height="243")
+            //nodemap#mapHolder(data="map")
+
+    div.row
+      div.col-xs-10.stats-boxes
+        div.row.second-row
+          div.col-xs-12.stat-holder.box
+            div.active-nodes.text-warning
+              i.icon-warning-o
+              span.small-title ATTENTION!
+              span.small-value This page does not represent the entire state of the Symverse network - listing a node on this page is a voluntary process.
+          //- div.col-xs-12.stat-holder.box
+          //-   div.active-nodes.text-danger
+          //-     i.icon-hashrate
+          //-     span.small-title SECURITY ALERT
+          //-     span.small-value
+          //-       a(href="https://blog.ethereum.org/2015/09/10/security-alert-previous-security-patch-can-lead-to-invalid-state-root-on-go-clients-with-a-specific-transaction-sequence-fixed-please-update/", target="_blank", class="text-danger") Read the blog post
+
+
+      //- div.clearfix
+
+    div.row(ng-cloak, style="padding-top: 10px")
+      div.col-xs-12(style="padding: 0px;")
+        table.table.table-striped.stat-holder
+          thead
+            tr.text-info
+              th.th-nodecheck
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Pin nodes to display first", ng-click="orderTable(['-stats.block.number', 'stats.block.propagation'], false)") check_circle_outline
+              th.th-nodename
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Node name", ng-click="orderTable(['info.name'], false)") dns
+              th.th-nodetype
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Node type", ng-click="orderTable(['info.node'], false)") computer
+              th.th-latency
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Node latency", ng-click="orderTable(['stats.latency'], false)") timelapse
+              th.th-nodecheck
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Warrant Group" ) thumb_up
+              th.th-nodecheck
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Is Primary", ng-click="orderTable(['-stats.hashrate'], false)") work
+              th.th-nodecheck
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Peers", ng-click="orderTable(['-stats.peers'], false)") group
+              th
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Last block", ng-click="orderTable(['-stats.block.number', 'stats.block.propagation'], false)") dashboard
+              th.th-blockhash &nbsp;
+              th.th-blockhash
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Node SymBase", ng-click="orderTable(['-stats.block.totalDifficulty'], false)") all_inbox
+              th.th-latency
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Block transactions", ng-click="orderTable(['-stats.block.transactions.length'], false)") check_circle_outline
+              th.th-blocktime
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Last block time", ng-click="orderTable(['-stats.block.received'], false)") hourglass_empty
+              th
+                i.material-icons(data-toggle="tooltip", data-placement="top", title="Up-time", ng-click="orderTable(['-stats.uptime'], false)") timer
+          tbody(ng-cloak)
+            tr(ng-repeat='node in nodes | orderBy:predicate track by node.id', class="{{ node.stats | mainClass : bestBlock }}", id="node_{{node.id}}")
+              td.td-nodecheck
+                i(ng-click="pinNode(node.id)", class="{{ node.pinned | nodePinClass }}", data-toggle="tooltip", data-placement="right", data-original-title="Click to {{ node.pinned ? 'un' : '' }}pin")
+              td.nodeInfo(rel="{{node.id}}")
+                span.small(data-toggle="tooltip", data-placement="top", data-html="true", data-original-title="{{node | geoTooltip}}") {{node.info.name}}
+                //- span.small &nbsp;({{node.info.ip}})
+                a.small(href="https://github.com/ethereum/wiki/wiki/Network-Status#updating", target="_blank", data-toggle="tooltip", data-placement="top", data-html="true", data-original-title="Netstats client needs update.<br>Click this icon for instructions.", class="{{ node.info | nodeClientClass : currentApiVersion }}")
+                  i.icon-warning-o
+              td
+                div.small(ng-bind-html="node.info.node | nodeVersion")
+              td(class="{{ node.readable.latencyClass }}")
+                span.small {{ node.readable.latency }}
+              td(class="text-center {{ node.stats.active | hashrateClass : node.stats.active }}", ng-bind-html="node.stats.warrant | warrantFilter")
+              td(class="text-center {{ node.stats.active | hashrateClass : node.stats.active }}", ng-bind-html="node.stats.block | primaryFilter : node.stats.symbase")
+              td(class="text-center {{ node.stats.peers | peerClass : node.stats.active }}", style="padding-left: 11px;") {{node.stats.peers}}
+              td(class="{{ node.stats | blockClass : bestBlock }}")
+                span(class="{{ node.readable.forkMessage ? node.readable.forkClass : '' }}") {{'#'}}{{ node.stats.block.number | number }}
+                //- a.small(data-toggle="tooltip", data-placement="top", data-html="true", data-original-title="{{ node.readable.forkMessage }}", class="{{ node.readable.forkClass }}")
+                  i.icon-warning-o
+              td(class="{{ node.stats | blockClass : bestBlock }}")
+                span.small {{node.stats.block.hash | hashFilter}}
+              td(class="{{ node.stats | blockClass : bestBlock }}")
+                span.small {{node.stats.symbase}}
+              td(style="padding-left: 14px;") {{node.stats.block.transactions.length || 0}}
+              td(class="{{ node.stats.block.received | timeClass : node.stats.active }}") {{node.stats.block.received | blockTimeFilter }}
+              td(class="{{ node.stats.uptime | upTimeClass : node.stats.active }}") {{ node.stats.uptime | upTimeFilter }}

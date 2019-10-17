@@ -1,0 +1,16 @@
+//- layout.jade
+doctype html
+html(ng-app="symStatsApp")
+  head
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
+    title Symverse Network Status
+    meta(property="og:image" content="favicon.png")
+    style(type="text/css") [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak { display: none !important; }
+    link(rel='stylesheet', href='//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700')
+    link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    //link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' crossorigin="anonymous")
+    link(rel='stylesheet', href='/css/symstats.min.css')
+  body
+    block content
+
+    script(src="/js/symstats.min.js")
