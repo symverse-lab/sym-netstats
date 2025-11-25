@@ -18,7 +18,7 @@ Clone the repository and install the dependencies
 
 ```bash
 git clone https://github.com/symverse-lab/sym-netstats.git
-cd symstats
+cd sym-netstats
 npm install
 sudo npm install -g grunt-cli
 ```
